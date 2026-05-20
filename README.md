@@ -7,7 +7,8 @@ Repositório criado para o projeto da disciplina de Programação 2, demonstrand
 * **Instituição:** Universidade Federal Rural de Pernambuco (UFRPE) - Unidade Acadêmica de Belo Jardim (UABJ)
 * **Disciplina:** Programação 2
 * **Docente:** Anderson Pinheiro Cavalcanti
-* **Discentes (Equipe):** * Antônio Miranda
+* **Discentes (Equipe):***
+  * Antônio Miranda
   * Lucas Soares
   * Marcos Matheus
   * Vinícius Fernando
