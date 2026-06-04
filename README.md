@@ -1,4 +1,4 @@
-# Sistema-Pizzaria-Prog2.
+# Sistema-Pizzaria-Prog2
 # 🍕 Sistema de Gerenciamento de Pizzaria (Delivery)
 
 Repositório criado para o projeto da disciplina de Programação 2, demonstrando a aplicação prática de Programação Orientada a Objetos (POO) em Java.
