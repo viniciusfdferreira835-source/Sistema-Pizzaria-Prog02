@@ -1,59 +1,56 @@
-# Sistema-Pizzaria-Prog2
 # 🍕 Sistema de Gerenciamento de Pizzaria (Delivery)
 
-Repositório criado para o projeto da disciplina de Programação 2, demonstrando a aplicação prática de Programação Orientada a Objetos (POO) em Java.
+Repositório criado para o projeto da disciplina de Programação 2, demonstrando a evolução e aplicação prática de conceitos de Programação Orientada a Objetos (POO) em Java.
 
 ### 🏛️ Informações Acadêmicas
 * **Instituição:** Universidade Federal Rural de Pernambuco (UFRPE) - Unidade Acadêmica de Belo Jardim (UABJ)
 * **Disciplina:** Programação 2
 * **Docente:** Anderson Pinheiro Cavalcanti
-* **Discentes (Equipe):***
-  * Antônio Miranda
-  * Lucas Soares
-  * Marcos Matheus
-  * Vinícius Fernando
+* **Equipe:** Antônio Miranda, Lucas Soares, Marcos Matheus e Vinícius Fernando
 
 ---
 
-## 🎯 Objetivo da Entrega 2
-Nesta segunda etapa do projeto, foi solicitado a evolução do sistema base para incluir conceitos mais robustos de segurança de dados e gerenciamento dinâmico de memória. As principais exigências foram:
-1. Aplicação de **Encapsulamento** (atributos `private` com métodos `get` e `set`).
-2. Substituição de vetores fixos (Arrays) por **Listas Dinâmicas** (`ArrayList`).
-3. Implementação de um sistema de **CRUD** (Create, Read, Update, Delete) através de uma classe principal com menu interativo, permitindo adicionar, listar, editar e remover objetos criados.
+## 🎯 Evolução do Projeto (Entregas 2 e 3)
+O sistema foi desenvolvido de forma incremental para contemplar conceitos robustos de segurança de dados, gerenciamento dinâmico de memória e tratamento de falhas. As principais implementações incluem:
+
+* **Encapsulamento:** Proteção de dados através de atributos `private` e `protected` com métodos `get` e `set`.
+* **Listas Dinâmicas:** Substituição de vetores fixos por `ArrayList` para gerenciar múltiplos itens e pedidos de forma ilimitada.
+* **Sistema CRUD Interativo:** Menu completo via terminal para Adicionar, Listar, Atualizar Status e Cancelar/Finalizar pedidos.
+* **Herança e Polimorfismo:** Especialização de classes onde objetos derivados possuem comportamentos únicos no cálculo de valores e emissão de recibos.
+* **Tratamento de Exceções:** Blindagem do sistema contra erros de digitação do usuário e infrações de regras de negócio através de blocos `try-catch` e exceções customizadas.
+* **Sistema de Histórico:** Gerenciamento de dupla memória, separando pedidos em andamento de pedidos concluídos ou cancelados.
 
 ---
 
 ## ⚙️ Explicação da Arquitetura do Código
 
-O código foi dividido em 4 blocos principais (Classes) para manter a modularidade e as regras de negócio bem definidas:
+O código está modularizado em 6 arquivos principais (Classes) para manter as regras de negócio bem definidas:
 
 ### 1. Classe `Cliente`
-* **O que faz:** Molde para armazenar os dados de contato do cliente.
-* **O que foi utilizado:** Atributos `private` (`nome`, `telefone`, `endereco`) para garantir o **Encapsulamento**. Apenas os métodos `get` e `set` permitem a leitura e alteração segura desses dados após o objeto ser instanciado pelo Construtor.
+Molde para armazenar os dados de contato do cliente. Utiliza o encapsulamento para garantir a leitura e alteração segura dos dados após a instanciação pelo Construtor. Possui um método estático inteligente para realizar a própria leitura de dados via Scanner.
 
 ### 2. Classe `Pizza`
-* **O que faz:** Representa o produto base do restaurante.
-* **O que foi utilizado:** Atributos protegidos para `sabor`, `tamanho` e `precoBase`. Possui o método `exibirDetalhesPizza()` para padronizar a forma como as informações do produto são impressas no console.
+Representa o produto base do restaurante. Contém os atributos de produto e os laços de repetição (protegidos por tratamento de erros) responsáveis por exibir o cardápio e instanciar os itens escolhidos.
 
-### 3. Classe `Pedido`
-* **O que faz:** Funciona como o "carrinho de compras" e unifica o cliente aos produtos escolhidos, além de ser responsável pelas regras de cálculo.
-* **O que foi utilizado:** * O atributo `numeroDoPedido` possui apenas o método `get`, travando qualquer tentativa externa de modificar o número fiscal de um pedido já gerado.
-  * Uso massivo de `ArrayList<Pizza>`, `ArrayList<String>` e `ArrayList<Double>` para permitir que o cliente inclua dezenas de itens extras sem travar o sistema por falta de espaço (o que aconteceria em um vetor simples de tamanho 10, por exemplo).
-  * O método `calcularTotalPedido()` utiliza laços de repetição `for-each` para varrer dinamicamente as listas e somar o valor a pagar.
+### 3. Classe `Pedido` (Superclasse)
+Funciona como o "carrinho de compras" unificando o cliente aos produtos escolhidos. Utiliza `ArrayList` de forma massiva para armazenar Pizzas, Bebidas e Sobremesas. O atributo do valor total foi definido como `protected` para permitir a comunicação direta com suas subclasses.
 
-### 4. Classe Principal (`PizzariaEntrega`)
-* **O que faz:** É o cérebro (Motor) da aplicação onde o método `main` é executado. Responsável pela interação direta com o usuário via terminal.
-* **O que foi utilizado:** * A biblioteca `Scanner` para capturar a digitação do usuário.
-  * Um `ArrayList<Pedido>` principal, que funciona como o banco de dados temporário do restaurante (memória).
-  * **O Sistema CRUD (Switch/Case):** Um menu interativo que roda dentro de um laço `while`.
-    * **Create (Adicionar):** Lê os dados, utiliza sub-laços (`while` e `for`) para incluir quantidades variadas de Pizzas, Bebidas e Sobremesas, e salva o objeto `Pedido` na lista.
-    * **Read (Listar):** Varre o `ArrayList` exibindo os recibos ativos.
-    * **Update (Editar):** Permite alterar o `Status` do pedido (ex: "Em preparo" para "Saiu para entrega").
-    * **Delete (Remover):** Localiza o pedido pelo ID e utiliza o comando `.remove()` da lista para apagar os dados em caso de cancelamento.
+### 4. Classe `PedidoDelivery` (Subclasse)
+Aplica o conceito de **Herança** ao estender a classe `Pedido`. Demonstra o uso de **Polimorfismo** através da anotação `@Override`, sobrescrevendo o método de cálculo total para embutir automaticamente a taxa de entrega, além de personalizar a impressão do recibo.
+
+### 5. Classe `QuantidadeInvalidaException`
+Aplica a exigência de **Exceções Verificadas**. É uma classe customizada (herdando diretamente de `Exception`) para representar uma quebra na regra de negócio, sendo disparada (`throw`) caso o usuário tente pedir uma quantidade igual ou menor que zero de qualquer item.
+
+### 6. Classe Principal `PizzariaEntrega`
+É o motor da aplicação onde o método `main` é executado e a interação com o usuário acontece. Gerencia duas listas dinâmicas (`listaDePedidos` e `historicoDePedidos`). Todo o menu de opções (`Scanner`) está protegido contra o erro `InputMismatchException`, impedindo que o sistema congele caso o usuário digite letras acidentalmente.
 
 ---
 
 ## 🚀 Como Executar
-1. Certifique-se de ter o [Java JDK](https://www.oracle.com/java/technologies/downloads/) instalado.
-2. Compile o arquivo: `javac PizzariaEntrega.java`
-3. Execute o programa: `java PizzariaEntrega`
+
+1. Certifique-se de ter o [Java JDK](https://www.oracle.com/java/technologies/downloads/) instalado na sua máquina.
+2. Faça o download de todos os arquivos `.java` deste repositório e coloque-os em uma mesma pasta.
+3. Abra o terminal (ou prompt de comando) nesta pasta e compile todos os arquivos de uma vez usando o comando:
+   `javac *.java`
+4. Execute o programa principal chamando a classe motora:
+   `java PizzariaEntrega`
