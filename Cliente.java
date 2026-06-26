@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Cliente {
     private String nome;
     private String telefone;
@@ -11,15 +13,24 @@ public class Cliente {
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
-
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
-
     public String getEndereco() { return endereco; }
     public void setEndereco(String endereco) { this.endereco = endereco; }
 
     public void exibirInfoCliente() {
         System.out.println("Cliente: " + this.nome + " | Tel: " + this.telefone);
         System.out.println("Endereço: " + this.endereco);
+    }
+
+    public static Cliente cadastrarNovoCliente(Scanner leitor) {
+        System.out.println("\n--- DADOS DO CLIENTE ---");
+        System.out.print("Nome: ");
+        String nome = leitor.nextLine();
+        System.out.print("Telefone: ");
+        String tel = leitor.nextLine();
+        System.out.print("Endereço: ");
+        String end = leitor.nextLine();
+        return new Cliente(nome, tel, end);
     }
 }
