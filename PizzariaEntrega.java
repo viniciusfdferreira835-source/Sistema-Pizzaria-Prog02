@@ -1,132 +1,69 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
 public class PizzariaEntrega {
     public static void main(String[] args) {
         Scanner leitor = new Scanner(System.in);
+        
         ArrayList<Pedido> listaDePedidos = new ArrayList<>();
+        ArrayList<Pedido> historicoDePedidos = new ArrayList<>();
+        
         int contadorPedidos = 1001; 
         int opcaoMenu = 0;
 
-        while (opcaoMenu != 6) {
+        while (opcaoMenu != 7) {
             System.out.println("\n🍕 GERENCIADOR DA PIZZARIA 🍕");
             System.out.println("1 - Adicionar Novo Pedido");
-            System.out.println("2 - Listar Todos os Pedidos");
+            System.out.println("2 - Listar Pedidos ATIVOS");
             System.out.println("3 - Editar Status do Pedido");
-            System.out.println("4 - Remover Pedido");
-            System.out.println("5 - Finalizar Pedido (Enviar p/ Entrega)");
-            System.out.println("6 - Sair");
+            System.out.println("4 - Cancelar/Remover Pedido");
+            System.out.println("5 - Finalizar Pedido (Mover para Histórico)");
+            System.out.println("6 - Histórico de Pedidos (Cancelados e Finalizados)");
+            System.out.println("7 - Sair");
             System.out.print("Escolha uma opção: ");
-            opcaoMenu = leitor.nextInt();
-            leitor.nextLine(); 
+            
+            try {
+                opcaoMenu = leitor.nextInt();
+                leitor.nextLine(); 
+            } catch (InputMismatchException e) {
+                System.out.println("\n❌ Erro: Por favor, digite apenas números! Letras não são aceitas.");
+                leitor.nextLine(); 
+                continue; 
+            }
 
             switch (opcaoMenu) {
                 case 1: 
-                    System.out.println("\n--- DADOS DO CLIENTE ---");
-                    System.out.print("Nome: ");
-                    String nome = leitor.nextLine();
-                    System.out.print("Telefone: ");
-                    String tel = leitor.nextLine();
-                    System.out.print("Endereço: ");
-                    String end = leitor.nextLine();
-
-                    Cliente c = new Cliente(nome, tel, end);
-                    Pedido novoPedido = new Pedido(contadorPedidos, c);
-
-                    int opP = -1;
-                    while (opP != 0) {
-                        System.out.println("\n--- CARDÁPIO DE PIZZAS ---");
-                        System.out.println("1. Calabresa (R$ 40)      4. Quatro Queijos (R$ 48)");
-                        System.out.println("2. Marguerita (R$ 38)     5. Portuguesa (R$ 42)");
-                        System.out.println("3. Frango/Catupiry(R$ 45) 6. Bacon c/ Milho (R$ 44)");
-                        System.out.println("0. NÃO QUERO PIZZAS / IR PARA BEBIDAS");
-                        System.out.print("Escolha o número (ou 0 para pular): ");
-                        opP = leitor.nextInt();
-                        
-                        if (opP == 0) break;
-
-                        if (opP >= 1 && opP <= 6) {
-                            System.out.print("Quantidade desta pizza: ");
-                            int qtd = leitor.nextInt();
-                            
-                            for (int i = 0; i < qtd; i++) {
-                                switch (opP) {
-                                    case 1: novoPedido.adicionarPizza(new Pizza("Calabresa", "G", 40.0)); break;
-                                    case 2: novoPedido.adicionarPizza(new Pizza("Marguerita", "G", 38.0)); break;
-                                    case 3: novoPedido.adicionarPizza(new Pizza("Frango/Catupiry", "G", 45.0)); break;
-                                    case 4: novoPedido.adicionarPizza(new Pizza("Quatro Queijos", "G", 48.0)); break;
-                                    case 5: novoPedido.adicionarPizza(new Pizza("Portuguesa", "G", 42.0)); break;
-                                    case 6: novoPedido.adicionarPizza(new Pizza("Bacon com Milho", "G", 44.0)); break;
-                                }
+                    Cliente c = Cliente.cadastrarNovoCliente(leitor);
+                    
+                    int tipo = 0;
+                    boolean tipoValido = false;
+                    
+                    while (!tipoValido) {
+                        try {
+                            System.out.print("\nTipo do Pedido (1 - Entrega R$ 5,00 | 2 - Retirada no balcão): ");
+                            tipo = leitor.nextInt();
+                            if (tipo == 1 || tipo == 2) {
+                                tipoValido = true;
+                            } else {
+                                System.out.println("❌ Opção inválida!");
                             }
-                            System.out.println("✅ " + qtd + " pizza(s) adicionada(s)!");
-                        } else {
-                            System.out.println("❌ Opção inválida!");
+                        } catch (InputMismatchException e) {
+                            System.out.println("❌ Erro: Digite 1 ou 2.");
+                            leitor.nextLine();
                         }
                     }
-
-                    int opB = -1;
-                    while (opB != 0) {
-                        System.out.println("\n--- BEBIDAS ---");
-                        System.out.println("1. Coca-Cola 2L (R$ 12)        4. Cerveja Lata (R$ 7)");
-                        System.out.println("2. Guaraná Antarctica (R$ 10)  5. Água Mineral (R$ 5)");
-                        System.out.println("3. Suco de Laranja 1L (R$ 14)");
-                        System.out.println("0. NÃO QUERO BEBIDAS / IR PARA EXTRAS");
-                        System.out.print("Escolha o número (ou 0 para pular): ");
-                        opB = leitor.nextInt();
-                        
-                        if (opB == 0) break;
-
-                        if (opB >= 1 && opB <= 5) {
-                            System.out.print("Quantidade desta bebida: ");
-                            int qtd = leitor.nextInt();
-                            
-                            for (int i = 0; i < qtd; i++) {
-                                switch (opB) {
-                                    case 1: novoPedido.adicionarItemExtra("Coca-Cola 2L", 12.0); break;
-                                    case 2: novoPedido.adicionarItemExtra("Guaraná Antarctica 2L", 10.0); break;
-                                    case 3: novoPedido.adicionarItemExtra("Suco de Laranja 1L", 14.0); break;
-                                    case 4: novoPedido.adicionarItemExtra("Cerveja Lata", 7.0); break;
-                                    case 5: novoPedido.adicionarItemExtra("Água Mineral", 5.0); break;
-                                }
-                            }
-                            System.out.println("✅ " + qtd + " bebida(s) adicionada(s)!");
-                        } else {
-                            System.out.println("❌ Opção inválida!");
-                        }
+                    
+                    // POLIMORFISMO
+                    Pedido novoPedido;
+                    if (tipo == 1) {
+                        novoPedido = new PedidoDelivery(contadorPedidos, c, 5.00);
+                    } else {
+                        novoPedido = new Pedido(contadorPedidos, c);
                     }
-
-                    int opS = -1;
-                    while (opS != 0) {
-                        System.out.println("\n--- EXTRAS E SOBREMESAS ---");
-                        System.out.println("1. Batata Frita (R$ 18)   4. Pudim (R$ 10)");
-                        System.out.println("2. Pão de Alho (R$ 12)    5. Petit Gâteau (R$ 18)");
-                        System.out.println("3. Frango (R$ 25)         6. Sorvete (R$ 12)");
-                        System.out.println("0. NÃO QUERO EXTRAS / SALVAR PEDIDO");
-                        System.out.print("Escolha o número (ou 0 para finalizar): ");
-                        opS = leitor.nextInt();
-                        
-                        if (opS == 0) break;
-                        
-                        if (opS >= 1 && opS <= 6) {
-                            System.out.print("Quantidade deste item: ");
-                            int qtd = leitor.nextInt();
-                            
-                            for (int i = 0; i < qtd; i++) {
-                                switch (opS) {
-                                    case 1: novoPedido.adicionarItemExtra("Batata Frita", 18.0); break;
-                                    case 2: novoPedido.adicionarItemExtra("Pão de Alho", 12.0); break;
-                                    case 3: novoPedido.adicionarItemExtra("Frango Passarinho", 25.0); break;
-                                    case 4: novoPedido.adicionarItemExtra("Pudim", 10.0); break;
-                                    case 5: novoPedido.adicionarItemExtra("Petit Gâteau", 18.0); break;
-                                    case 6: novoPedido.adicionarItemExtra("Sorvete", 12.0); break;
-                                }
-                            }
-                            System.out.println("✅ " + qtd + " item(ns) adicionado(s)!");
-                        } else {
-                            System.out.println("❌ Opção inválida!");
-                        }
-                    }
+                    
+                    Pizza.escolherPizzas(leitor, novoPedido);
+                    novoPedido.escolherBebidasEExtras(leitor);
 
                     listaDePedidos.add(novoPedido);
                     System.out.println("\n✅ PEDIDO " + contadorPedidos + " CADASTRADO COM SUCESSO!");
@@ -135,77 +72,106 @@ public class PizzariaEntrega {
 
                 case 2: 
                     System.out.println("\n--- LISTA DE PEDIDOS ATIVOS ---");
-                    if (listaDePedidos.isEmpty()) {
-                        System.out.println("Nenhum pedido no sistema.");
-                    } else {
+                    if (listaDePedidos.isEmpty()) System.out.println("Nenhum pedido ativo no momento.");
+                    else for (Pedido p : listaDePedidos) p.imprimirRecibo();
+                    break;
+
+                case 3: 
+                    System.out.print("\nDigite o Nº do Pedido para editar o status: ");
+                    try {
+                        int numEdicao = leitor.nextInt();
+                        leitor.nextLine();
+                        boolean achouEdicao = false;
                         for (Pedido p : listaDePedidos) {
+                            if (p.getNumeroDoPedido() == numEdicao) {
+                                System.out.print("Novo Status: ");
+                                p.setStatus(leitor.nextLine());
+                                System.out.println("✅ Status atualizado!");
+                                achouEdicao = true;
+                                break;
+                            }
+                        }
+                        if (!achouEdicao) System.out.println("❌ Pedido ativo não encontrado.");
+                    } catch (InputMismatchException e) {
+                        System.out.println("❌ Erro: Digite um número de pedido válido.");
+                        leitor.nextLine();
+                    }
+                    break;
+
+                case 4: 
+                    System.out.print("\nDigite o Nº do Pedido para cancelar: ");
+                    try {
+                        int numRem = leitor.nextInt();
+                        boolean achouRem = false;
+                        for (int i = 0; i < listaDePedidos.size(); i++) {
+                            if (listaDePedidos.get(i).getNumeroDoPedido() == numRem) {
+                                Pedido pCancelado = listaDePedidos.remove(i);
+                                pCancelado.setStatus("Cancelado ❌");
+                                historicoDePedidos.add(pCancelado);
+                                
+                                System.out.println("🗑️ Pedido " + numRem + " cancelado e movido para o histórico.");
+                                achouRem = true;
+                                break;
+                            }
+                        }
+                        if (!achouRem) System.out.println("❌ Pedido ativo não encontrado.");
+                    } catch (InputMismatchException e) {
+                        System.out.println("❌ Erro: Digite um número de pedido válido.");
+                        leitor.nextLine();
+                    }
+                    break;
+
+                case 5: 
+                    System.out.print("\nDigite o Nº do Pedido para finalizar: ");
+                    try {
+                        int numFin = leitor.nextInt();
+                        boolean achouFin = false;
+                        for (int i = 0; i < listaDePedidos.size(); i++) {
+                            if (listaDePedidos.get(i).getNumeroDoPedido() == numFin) {
+                                Pedido pFinalizado = listaDePedidos.remove(i);
+                                
+                                if (pFinalizado instanceof PedidoDelivery) {
+                                    pFinalizado.setStatus("Finalizado: Entregue 🏍️");
+                                    System.out.println("\n==============================================");
+                                    System.out.println("🛵 SUA PIZZA ESTÁ A CAMINHO! Prepare a mesa! 🍕💨");
+                                    System.out.println("==============================================");
+                                } else {
+                                    pFinalizado.setStatus("Finalizado: Retirado 🍕");
+                                    System.out.println("\n==============================================");
+                                    System.out.println("🍕 SEU PEDIDO ESTÁ PRONTO! Pode vir retirar! 🏃‍♂️💨");
+                                    System.out.println("==============================================");
+                                }
+                                
+                                historicoDePedidos.add(pFinalizado);
+                                pFinalizado.imprimirRecibo(); 
+                                achouFin = true;
+                                break;
+                            }
+                        }
+                        if (!achouFin) System.out.println("❌ Pedido ativo não encontrado.");
+                    } catch (InputMismatchException e) {
+                        System.out.println("❌ Erro: Digite um número de pedido válido.");
+                        leitor.nextLine();
+                    }
+                    break;
+
+                case 6: 
+                    System.out.println("\n--- 🗄️ HISTÓRICO DE PEDIDOS (Finalizados / Cancelados) ---");
+                    if (historicoDePedidos.isEmpty()) {
+                        System.out.println("O histórico está vazio. Nenhum pedido foi finalizado ou cancelado ainda.");
+                    } else {
+                        for (Pedido p : historicoDePedidos) {
                             p.imprimirRecibo();
                         }
                     }
                     break;
 
-                case 3: 
-                    System.out.print("\nDigite o Nº do Pedido para editar o status: ");
-                    int numEdicao = leitor.nextInt();
-                    leitor.nextLine();
-                    boolean encontradoEdicao = false;
-
-                    for (Pedido p : listaDePedidos) {
-                        if (p.getNumeroDoPedido() == numEdicao) {
-                            System.out.print("Novo Status (Ex: Em preparo): ");
-                            String novoStatus = leitor.nextLine();
-                            p.setStatus(novoStatus);
-                            System.out.println("✅ Status atualizado!");
-                            encontradoEdicao = true;
-                            break;
-                        }
-                    }
-                    if (!encontradoEdicao) System.out.println("❌ Pedido não encontrado.");
-                    break;
-
-                case 4: 
-                    System.out.print("\nDigite o Nº do Pedido para remover: ");
-                    int numRemover = leitor.nextInt();
-                    boolean encontradoRemocao = false;
-
-                    for (int i = 0; i < listaDePedidos.size(); i++) {
-                        if (listaDePedidos.get(i).getNumeroDoPedido() == numRemover) {
-                            listaDePedidos.remove(i);
-                            System.out.println("🗑️ Pedido " + numRemover + " removido do sistema.");
-                            encontradoRemocao = true;
-                            break;
-                        }
-                    }
-                    if (!encontradoRemocao) System.out.println("❌ Pedido não encontrado.");
-                    break;
-
-                case 5: 
-                    System.out.print("\nDigite o Nº do Pedido para finalizar e enviar: ");
-                    int numFinalizar = leitor.nextInt();
-                    boolean encontradoFinalizar = false;
-
-                    for (Pedido p : listaDePedidos) {
-                        if (p.getNumeroDoPedido() == numFinalizar) {
-                            p.setStatus("Saiu para entrega 🏍️");
-                            
-                            System.out.println("\n==============================================");
-                            System.out.println("🛵 SUA PIZZA ESTÁ A CAMINHO! Prepare a mesa! 🍕💨");
-                            System.out.println("==============================================");
-                            
-                            p.imprimirRecibo(); 
-                            encontradoFinalizar = true;
-                            break;
-                        }
-                    }
-                    if (!encontradoFinalizar) System.out.println("❌ Pedido não encontrado.");
-                    break;
-
-                case 6: 
-                    System.out.println("Encerrando o sistema da Pizzaria. Até logo!");
+                case 7: 
+                    System.out.println("Encerrando o sistema. Até logo!");
                     break;
 
                 default:
-                    System.out.println("Opção inválida! Digite um número de 1 a 6.");
+                    System.out.println("Opção inválida! Escolha de 1 a 7.");
             }
         }
         leitor.close();
