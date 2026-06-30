@@ -2,121 +2,178 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 
-// ==========================================
-// 1. EXCEÇÃO CUSTOMIZADA (Regra de Negócio)
-// ==========================================
-class QuantidadeInvalidaException extends Exception {
-    public QuantidadeInvalidaException(String mensagem) {
-        super(mensagem);
-    }
-}
+public class PizzariaEntrega {
+    public static void main(String[] args) {
+        Scanner leitor = new Scanner(System.in);
+        
+        ArrayList<Pedido> listaDePedidos = new ArrayList<>();
+        ArrayList<Pedido> historicoDePedidos = new ArrayList<>();
+        
+        int contadorPedidos = 1001; 
+        int opcaoMenu = 0;
 
-// ==========================================
-// 2. CLASSE CLIENTE
-// ==========================================
-class Cliente {
-    private String nome;
-    private String telefone;
-    private String endereco;
-
-    public Cliente(String nome, String telefone, String endereco) {
-        this.nome = nome;
-        this.telefone = telefone;
-        this.endereco = endereco;
-    }
-
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-    public String getTelefone() { return telefone; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
-    public String getEndereco() { return endereco; }
-    public void setEndereco(String endereco) { this.endereco = endereco; }
-
-    public void exibirInfoCliente() {
-        System.out.println("Cliente: " + this.nome + " | Tel: " + this.telefone);
-        System.out.println("Endereço: " + this.endereco);
-    }
-
-    public static Cliente cadastrarNovoCliente(Scanner leitor) {
-        System.out.println("\n--- DADOS DO CLIENTE ---");
-        System.out.print("Nome: ");
-        String nome = leitor.nextLine();
-        System.out.print("Telefone: ");
-        String tel = leitor.nextLine();
-        System.out.print("Endereço: ");
-        String end = leitor.nextLine();
-        return new Cliente(nome, tel, end);
-    }
-}
-
-// ==========================================
-// 3. CLASSE PIZZA
-// ==========================================
-class Pizza {
-    private String sabor;
-    private String tamanho;
-    private double precoBase;
-
-    public Pizza(String sabor, String tamanho, double precoBase) {
-        this.sabor = sabor;
-        this.tamanho = tamanho;
-        this.precoBase = precoBase;
-    }
-
-    public String getSabor() { return sabor; }
-    public void setSabor(String sabor) { this.sabor = sabor; }
-    public String getTamanho() { return tamanho; }
-    public void setTamanho(String tamanho) { this.tamanho = tamanho; }
-    public double getPrecoBase() { return precoBase; }
-    public void setPrecoBase(double precoBase) { this.precoBase = precoBase; }
-    public double calcularPrecoFinal() { return precoBase; }
-
-    public void exibirDetalhesPizza() {
-        System.out.println("- 1x Pizza " + this.tamanho + " de " + this.sabor + " (R$ " + this.precoBase + ")");
-    }
-
-    public static void escolherPizzas(Scanner leitor, Pedido pedido) {
-        int opP = -1;
-        while (opP != 0) {
-            System.out.println("\n--- CARDÁPIO DE PIZZAS ---");
-            System.out.println("1. Calabresa (R$ 40)      4. Quatro Queijos (R$ 48)");
-            System.out.println("2. Marguerita (R$ 38)     5. Portuguesa (R$ 42)");
-            System.out.println("3. Frango/Catupiry(R$ 45) 6. Bacon c/ Milho (R$ 44)");
-            System.out.println("0. NÃO QUERO PIZZAS / AVANÇAR");
-            System.out.print("Escolha o número (ou 0 para pular): ");
+        while (opcaoMenu != 7) {
+            System.out.println("\n🍕 GERENCIADOR DA PIZZARIA 🍕");
+            System.out.println("1 - Adicionar Novo Pedido");
+            System.out.println("2 - Listar Pedidos ATIVOS");
+            System.out.println("3 - Editar Status do Pedido");
+            System.out.println("4 - Cancelar/Remover Pedido");
+            System.out.println("5 - Finalizar Pedido (Mover para Histórico)");
+            System.out.println("6 - Histórico de Pedidos (Cancelados e Finalizados)");
+            System.out.println("7 - Sair");
+            System.out.print("Escolha uma opção: ");
             
             try {
-                opP = leitor.nextInt();
-                if (opP == 0) break;
+                opcaoMenu = leitor.nextInt();
+                leitor.nextLine(); 
+            } catch (InputMismatchException e) {
+                System.out.println("\n❌ Erro: Por favor, digite apenas números! Letras não são aceitas.");
+                leitor.nextLine(); 
+                continue; 
+            }
 
-                if (opP >= 1 && opP <= 6) {
-                    System.out.print("Quantidade desta pizza: ");
-                    int qtd = leitor.nextInt();
+            switch (opcaoMenu) {
+                case 1: 
+                    Cliente c = Cliente.cadastrarNovoCliente(leitor);
                     
-                    if (qtd <= 0) {
-                        throw new QuantidadeInvalidaException("Erro: A quantidade deve ser maior que zero!");
-                    }
-
-                    for (int i = 0; i < qtd; i++) {
-                        switch (opP) {
-                            case 1: pedido.adicionarPizza(new Pizza("Calabresa", "G", 40.0)); break;
-                            case 2: pedido.adicionarPizza(new Pizza("Marguerita", "G", 38.0)); break;
-                            case 3: pedido.adicionarPizza(new Pizza("Frango/Catupiry", "G", 45.0)); break;
-                            case 4: pedido.adicionarPizza(new Pizza("Quatro Queijos", "G", 48.0)); break;
-                            case 5: pedido.adicionarPizza(new Pizza("Portuguesa", "G", 42.0)); break;
-                            case 6: pedido.adicionarPizza(new Pizza("Bacon c/ Milho", "G", 44.0)); break;
+                    int tipo = 0;
+                    boolean tipoValido = false;
+                    
+                    while (!tipoValido) {
+                        try {
+                            System.out.print("\nTipo do Pedido (1 - Entrega R$ 5,00 | 2 - Retirada no balcão): ");
+                            tipo = leitor.nextInt();
+                            if (tipo == 1 || tipo == 2) {
+                                tipoValido = true;
+                            } else {
+                                System.out.println("❌ Opção inválida!");
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println("❌ Erro: Digite 1 ou 2.");
+                            leitor.nextLine();
                         }
                     }
-                    System.out.println("✅ " + qtd + " pizza(s) adicionada(s)!");
-                } else {
-                    System.out.println("❌ Opção inválida!");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("❌ Erro de digitação: Por favor, digite apenas números.");
-                leitor.nextLine(); // Limpa o scanner
-            } catch (QuantidadeInvalidaException e) {
-                System.out.println("❌ " + e.getMessage());
+                    
+                    // POLIMORFISMO
+                    Pedido novoPedido;
+                    if (tipo == 1) {
+                        novoPedido = new PedidoDelivery(contadorPedidos, c, 5.00);
+                    } else {
+                        novoPedido = new Pedido(contadorPedidos, c);
+                    }
+                    
+                    Pizza.escolherPizzas(leitor, novoPedido);
+                    novoPedido.escolherBebidasEExtras(leitor);
+
+                    listaDePedidos.add(novoPedido);
+                    System.out.println("\n✅ PEDIDO " + contadorPedidos + " CADASTRADO COM SUCESSO!");
+                    contadorPedidos++; 
+                    break;
+
+                case 2: 
+                    System.out.println("\n--- LISTA DE PEDIDOS ATIVOS ---");
+                    if (listaDePedidos.isEmpty()) System.out.println("Nenhum pedido ativo no momento.");
+                    else for (Pedido p : listaDePedidos) p.imprimirRecibo();
+                    break;
+
+                case 3: 
+                    System.out.print("\nDigite o Nº do Pedido para editar o status: ");
+                    try {
+                        int numEdicao = leitor.nextInt();
+                        leitor.nextLine();
+                        boolean achouEdicao = false;
+                        for (Pedido p : listaDePedidos) {
+                            if (p.getNumeroDoPedido() == numEdicao) {
+                                System.out.print("Novo Status: ");
+                                p.setStatus(leitor.nextLine());
+                                System.out.println("✅ Status atualizado!");
+                                achouEdicao = true;
+                                break;
+                            }
+                        }
+                        if (!achouEdicao) System.out.println("❌ Pedido ativo não encontrado.");
+                    } catch (InputMismatchException e) {
+                        System.out.println("❌ Erro: Digite um número de pedido válido.");
+                        leitor.nextLine();
+                    }
+                    break;
+
+                case 4: 
+                    System.out.print("\nDigite o Nº do Pedido para cancelar: ");
+                    try {
+                        int numRem = leitor.nextInt();
+                        boolean achouRem = false;
+                        for (int i = 0; i < listaDePedidos.size(); i++) {
+                            if (listaDePedidos.get(i).getNumeroDoPedido() == numRem) {
+                                Pedido pCancelado = listaDePedidos.remove(i);
+                                pCancelado.setStatus("Cancelado ❌");
+                                historicoDePedidos.add(pCancelado);
+                                
+                                System.out.println("🗑️ Pedido " + numRem + " cancelado e movido para o histórico.");
+                                achouRem = true;
+                                break;
+                            }
+                        }
+                        if (!achouRem) System.out.println("❌ Pedido ativo não encontrado.");
+                    } catch (InputMismatchException e) {
+                        System.out.println("❌ Erro: Digite um número de pedido válido.");
+                        leitor.nextLine();
+                    }
+                    break;
+
+                case 5: 
+                    System.out.print("\nDigite o Nº do Pedido para finalizar: ");
+                    try {
+                        int numFin = leitor.nextInt();
+                        boolean achouFin = false;
+                        for (int i = 0; i < listaDePedidos.size(); i++) {
+                            if (listaDePedidos.get(i).getNumeroDoPedido() == numFin) {
+                                Pedido pFinalizado = listaDePedidos.remove(i);
+                                
+                                if (pFinalizado instanceof PedidoDelivery) {
+                                    pFinalizado.setStatus("Finalizado: Entregue 🏍️");
+                                    System.out.println("\n==============================================");
+                                    System.out.println("🛵 SUA PIZZA ESTÁ A CAMINHO! Prepare a mesa! 🍕💨");
+                                    System.out.println("==============================================");
+                                } else {
+                                    pFinalizado.setStatus("Finalizado: Retirado 🍕");
+                                    System.out.println("\n==============================================");
+                                    System.out.println("🍕 SEU PEDIDO ESTÁ PRONTO! Pode vir retirar! 🏃‍♂️💨");
+                                    System.out.println("==============================================");
+                                }
+                                
+                                historicoDePedidos.add(pFinalizado);
+                                pFinalizado.imprimirRecibo(); 
+                                achouFin = true;
+                                break;
+                            }
+                        }
+                        if (!achouFin) System.out.println("❌ Pedido ativo não encontrado.");
+                    } catch (InputMismatchException e) {
+                        System.out.println("❌ Erro: Digite um número de pedido válido.");
+                        leitor.nextLine();
+                    }
+                    break;
+
+                case 6: 
+                    System.out.println("\n--- 🗄️ HISTÓRICO DE PEDIDOS (Finalizados / Cancelados) ---");
+                    if (historicoDePedidos.isEmpty()) {
+                        System.out.println("O histórico está vazio. Nenhum pedido foi finalizado ou cancelado ainda.");
+                    } else {
+                        for (Pedido p : historicoDePedidos) {
+                            p.imprimirRecibo();
+                        }
+                    }
+                    break;
+
+                case 7: 
+                    System.out.println("Encerrando o sistema. Até logo!");
+                    break;
+
+                default:
+                    System.out.println("Opção inválida! Escolha de 1 a 7.");
             }
         }
+        leitor.close();
     }
 }
